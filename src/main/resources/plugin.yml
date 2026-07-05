@@ -1,0 +1,25 @@
+name: RouletteChest
+version: '${project.version}'
+main: ru.dvolk.roulettechest.RouletteChestPlugin
+api-version: '1.21'
+author: dvolk
+description: Roulette-style loot from marked chests, ender chests and shulker boxes.
+commands:
+  rchest:
+    description: Manage roulette chests.
+    usage: |
+      /rchest set <pool>   - mark the block you are looking at
+      /rchest unset        - remove the mark from the block you are looking at
+      /rchest list         - list all marked blocks
+      /rchest reload       - reload config
+    permission: roulettechest.admin
+permissions:
+  roulettechest.admin:
+    description: Manage roulette chests.
+    default: op
+  roulettechest.use:
+    description: Trigger the roulette on marked chests.
+    default: true
+  roulettechest.cooldown.bypass:
+    description: Ignore per-pool cooldowns (and skip setting them).
+    default: op

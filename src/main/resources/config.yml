@@ -1,0 +1,176 @@
+# RouletteChest configuration.
+#
+# Each pool is a named set of prizes. A prize has two parts:
+#   display: what appears in the spinning roulette (visual only)
+#   reward:  what the player actually receives when the roulette stops
+#
+# reward can be a single object, a list of objects (all granted in order), or one of the
+# shortcut types below.
+#
+# reward.type values:
+#   ITEM     - give an ItemStack (material/amount/name/lore)
+#   COMMAND  - run one console command (use {player} placeholder)
+#   ITEMS    - give many ItemStacks. Provide 'items:' list, each entry is a normal ITEM body.
+#   COMMANDS - run many console commands. Provide 'commands:' list of raw command strings.
+#   NONE     - give nothing (useful for "blank" slots)
+#
+# Examples:
+#
+#   reward:                     # single item
+#     type: ITEM
+#     material: DIAMOND
+#     amount: 3
+#
+#   reward:                     # multiple items + a command, listed inline
+#     - type: ITEM
+#       material: DIAMOND
+#       amount: 3
+#     - type: ITEM
+#       material: EMERALD
+#       amount: 5
+#     - type: COMMAND
+#       command: "eco give {player} 500"
+#
+#   reward:                     # same idea using the ITEMS shortcut
+#     type: ITEMS
+#     items:
+#       - { material: DIAMOND, amount: 3 }
+#       - { material: EMERALD, amount: 5 }
+#
+#   reward:                     # or COMMANDS shortcut
+#     type: COMMANDS
+#     commands:
+#       - "give {player} diamond 3"
+#       - "eco give {player} 500"
+#
+# 'weight' controls how likely a prize is to be picked. Higher = more common.
+#
+# Per-pool options:
+#   cooldown-seconds : how long players must wait between rolls (0 = disabled).
+#   cooldown-scope   : SERVER = one cooldown per marked block, shared by all players.
+#                      PLAYER = each player has their own cooldown for this pool.
+#   win-message      : chat line sent to the player when the roulette stops.
+#                      placeholders: {prize}, {pool}, {player}
+#   cooldown-message : chat line sent when the pool is still on cooldown.
+#                      placeholders: {time}, {pool}, {player}
+#   broadcast-message: chat line sent to EVERYONE on the server when a player wins.
+#                      leave empty ("") to disable. placeholders: {prize}, {pool}, {player}
+#   busy-message     : sent when another player is already spinning this chest (SOLO only).
+#                      placeholders: {pool}, {player} (the current spinner's name)
+#   concurrency      : SOLO     - only one player at a time; others get busy-message.
+#                      SPECTATE - others share the same GUI in read-only mode.
+#                      FREE     - each player rolls their own independent roulette.
+#                      Default is SPECTATE.
+
+animation:
+  # Total spin duration in ticks (20 ticks = 1 second).
+  duration-ticks: 60
+  # Starting delay between reel shifts (fast).
+  start-interval-ticks: 1
+  # Ending delay between reel shifts (slow, dramatic).
+  end-interval-ticks: 8
+  # Sound played on each tick of the reel.
+  tick-sound: BLOCK_NOTE_BLOCK_HAT
+  # Sound played when the roulette stops.
+  win-sound: ENTITY_PLAYER_LEVELUP
+
+pools:
+  default:
+    title: "&6&lРулетка"
+    cooldown-seconds: 300
+    cooldown-scope: PLAYER
+    concurrency: SPECTATE
+    win-message: "&6[Рулетка] &fВам выпало: &e{prize}"
+    cooldown-message: "&cПодождите &e{time}&c до следующей попытки."
+    broadcast-message: "&6[Рулетка] &e{player} &fвыиграл &e{prize}&f!"
+    busy-message: "&cПодождите: &e{player}&c уже крутит рулетку."
+    prizes:
+      - weight: 40
+        display:
+          material: IRON_INGOT
+          amount: 1
+          name: "&fЖелезный слиток"
+        reward:
+          type: ITEM
+          material: IRON_INGOT
+          amount: 4
+      - weight: 25
+        display:
+          material: GOLD_INGOT
+          amount: 1
+          name: "&eЗолотой слиток"
+        reward:
+          type: ITEM
+          material: GOLD_INGOT
+          amount: 2
+      - weight: 15
+        display:
+          material: DIAMOND
+          amount: 1
+          name: "&bАлмаз"
+        reward:
+          type: ITEM
+          material: DIAMOND
+          amount: 1
+      - weight: 10
+        display:
+          material: EMERALD
+          amount: 1
+          name: "&aМонеты (100)"
+        reward:
+          type: COMMAND
+          command: "eco give {player} 100"
+      - weight: 8
+        display:
+          material: NETHERITE_INGOT
+          amount: 1
+          name: "&5Незеритовый слиток"
+        reward:
+          type: ITEM
+          material: NETHERITE_INGOT
+          amount: 1
+      - weight: 2
+        display:
+          material: NETHER_STAR
+          amount: 1
+          name: "&d&lДжекпот"
+        reward:
+          - type: ITEM
+            material: DIAMOND_BLOCK
+            amount: 8
+          - type: ITEM
+            material: NETHERITE_INGOT
+            amount: 2
+          - type: COMMAND
+            command: "eco give {player} 1000"
+
+  # Example of a shared cooldown chest: everyone shares one roll every 10 minutes
+  # per marked block. Great for hub events.
+  event:
+    title: "&c&lИвент-рулетка"
+    cooldown-seconds: 600
+    cooldown-scope: SERVER
+    concurrency: SOLO
+    win-message: "&c[Ивент] &f{player} выиграл &e{prize}&f!"
+    cooldown-message: "&7Ивент-сундук перезарядится через &e{time}&7."
+    broadcast-message: "&c&l⚑ &e{player} &fвзял &6{prize} &fиз ивент-сундука!"
+    busy-message: "&c&l⚑ &fИвент-сундук занят: {player} уже крутит."
+    prizes:
+      - weight: 1
+        display:
+          material: TOTEM_OF_UNDYING
+          amount: 1
+          name: "&6Тотем"
+        reward:
+          type: ITEM
+          material: TOTEM_OF_UNDYING
+          amount: 1
+      - weight: 3
+        display:
+          material: GOLD_INGOT
+          amount: 1
+          name: "&eЗолото"
+        reward:
+          type: ITEM
+          material: GOLD_INGOT
+          amount: 8
