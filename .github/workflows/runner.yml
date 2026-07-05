@@ -1,5 +1,11 @@
 name: Manual Workflow
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
+    inputs:
+      build:
+        description: Build
+        type: string
+        required: true
 
 jobs:
   build:
@@ -7,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: echo "Процесс запущен вручную!"
+    - run: echo "Процесс запущен вручную! Build - ${{ github.event.inputs.build}}"
 
     - name: Checkout repository
       uses: actions/checkout@v4
