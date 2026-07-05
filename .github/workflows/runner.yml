@@ -11,6 +11,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+      permissions:
+        contents: write
+        pull-requests: write
+        repository-projects: write
 
     steps:
     - run: echo "Процесс запущен вручную! Build - ${{ github.event.inputs.build}}"
